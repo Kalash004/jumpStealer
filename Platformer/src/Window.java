@@ -7,7 +7,7 @@ public class Window extends JFrame {
 	Dimension screenSize;
 	GamePanel panel;
 
-	public Window(Options opt) {
+	public Window(Options opt, MapManager mapManager) {
 		
 		this.setSize(900, 900);
 
@@ -23,7 +23,7 @@ public class Window extends JFrame {
 		this.setVisible(true);
 		
 		// creating panel
-		panel = new GamePanel(opt);
+		panel = new GamePanel(opt, mapManager);
 		panel.setVisible(true);
 		this.add(panel);
 		

@@ -15,16 +15,20 @@ public class GamePanel extends JPanel implements ActionListener {
 	Player player;
 	Timer gameTimer;
 	Options opt;
+	MapManager mapManager;
+	public boolean redrawMap = true;
 
-	public GamePanel(Options opt) {
+	public GamePanel(Options opt, MapManager mapManager) {
 		// setting up game panel
 		this.setLocation(0, 0);
 		this.setSize(this.getSize());
 		this.setBackground(opt.backGround);
 		// setting up player, walls and game loop
 		player = new Player(400, 00, this, opt);
+		this.mapManager = mapManager;
+		mapManager.gamePanel = this;
 		this.opt = opt; 
-		makeWalls();
+	//	makeWalls();
 
 		gameTimer = new Timer();
 		gameTimer.schedule(new TimerTask() {
@@ -42,25 +46,38 @@ public class GamePanel extends JPanel implements ActionListener {
 		}, 0, 17); // (.. , timer starts right away, 17 milisec to wait for 60fps)
 
 	}
-
+// load auto test map
 	public void makeWalls() {
 		for (int i = 50;i < 650; i+=50) {
 			walls.add(new Wall(i, 600, 50, 50,opt));
-		}
+		}//                 x, y, width, height
 		walls.add(new Wall(50, 550, 50,50,opt));
 		walls.add(new Wall(100, 550, 50,50,opt));
 		walls.add(new Wall(50, 500, 50,50,opt));
 		walls.add(new Wall(50, 300, 50,50,opt));
 		walls.add(new Wall(150, 400, 100,5,opt));
+	
 
 	}
 
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D gtd = (Graphics2D) g;
-		player.draw(gtd);
-		for (Wall wall : walls)
-			wall.draw(gtd);
+		player.draw(gtd); 
+		Map map;
+//		if (redrawMap) {
+//			for (Wall wall : walls) {				
+//				gtd.clearRect(wall.x, wall.y, wall.width, wall.height);
+//			}
+//			walls.removeAll(walls);
+//		}
+			map = mapManager.currentMap;
+			for (Wall wall : map.map) {	
+				wall.draw(gtd);
+				walls.add(wall);
+			}
+		//	redrawMap = false;
+	//	}
 	}
 
 	public void keyPressed(KeyEvent e) {

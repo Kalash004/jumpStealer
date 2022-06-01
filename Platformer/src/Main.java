@@ -3,8 +3,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		Options opt = new Options();
-		Window wind = new Window(opt);
-		
+		MapManager mapManager = new MapManager(opt);
+		Window wind = new Window(opt, mapManager);
+		mapManager.setCurrentMap(0);
+
 	}
 
 }
