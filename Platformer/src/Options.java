@@ -9,8 +9,11 @@ public class Options {
 	Color backGround = Color.LIGHT_GRAY;
 	
 	// player
+	Color hitbox = Color.red;
+	int startPlayerX;
 	int playerHeight = 100;
 	int playerWidth = 50;
 	double playerGravitation = 1;
+	double playerCharge = 0.6;
 	
 }

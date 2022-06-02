@@ -23,7 +23,7 @@ public class Window extends JFrame {
 		this.setVisible(true);
 		
 		// creating panel
-		panel = new GamePanel(opt, mapManager);
+		panel = new GamePanel(opt, mapManager,this);
 		panel.setVisible(true);
 		this.add(panel);
 		

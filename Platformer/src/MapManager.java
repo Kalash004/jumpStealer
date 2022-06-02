@@ -19,7 +19,7 @@ public class MapManager {
 		currentMap = mapsHolder.get(0);
 	}
 	
-	
+	// working map importer
 	public void addMap(String location) throws FileNotFoundException {
 		Map map = new Map();
 		ArrayList<Wall> walls = new ArrayList<Wall>();
@@ -49,13 +49,13 @@ public class MapManager {
 	}
 
 	public void setCurrentMap(Map map) {
-		// TODO: clear current map and draw a new one;
+		// FIXME: clear current map and draw a new one;
 		currentMap = map;
 		gamePanel.redrawMap = true;
 	}
 	
 	public void setCurrentMap(int index) {
-		// TODO: clear current map and draw a new one;
+		// FIXME: clear current map and draw a new one;
  		currentMap = mapsHolder.get(index);
 		gamePanel.redrawMap = true;
 	}
