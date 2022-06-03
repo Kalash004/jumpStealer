@@ -16,4 +16,7 @@ public class Options {
 	double playerGravitation = 1;
 	double playerCharge = 0.6;
 	
+	// wall
+	int wallBlockSize = 50;
+	
 }

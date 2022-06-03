@@ -1,3 +1,4 @@
+import java.io.IOException;
 
 public class Main {
 
@@ -6,6 +7,12 @@ public class Main {
 		MapManager mapManager = new MapManager(opt);
 		Window wind = new Window(opt, mapManager);
 		mapManager.setCurrentMap(0);
+		try {
+			mapManager.exportMap(mapManager.currentMap, "testmap2");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 

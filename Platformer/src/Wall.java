@@ -18,6 +18,7 @@ public class Wall {
 		this.y = y;
 		startX = x;
 		startY = y;
+		System.out.println(startY);
 		this.width = width;
 		this.height = height;
 
