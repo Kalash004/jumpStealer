@@ -2,17 +2,30 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
-
+/**
+ * This class creates a window.
+ * Is extended after JFrame  
+ * @author Anton
+ */
+@SuppressWarnings("serial")
 public class Window extends JFrame {
-	Dimension screenSize;
-	GamePanel panel;
 
+	/**
+	 * Window constructor, initializes windows settings, creates GamePanel and adds
+	 * it to the window, also adds key listener.
+	 * 
+	 * @param opt - Game options
+	 * @param mapManager - Map Manager
+	 * @see KeySeer
+	 * @see Options
+	 * @see MapManager
+	 */
 	public Window(Options opt, MapManager mapManager) {
 		
 		this.setSize(900, 900);
 
 		// centering the window to the middle of screen
-		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation((int) (screenSize.getWidth() / 2 - this.getSize().getWidth() / 2),
 				(int) (screenSize.getHeight() / 2 - this.getSize().getHeight() / 2)); 
 		
@@ -23,7 +36,7 @@ public class Window extends JFrame {
 		this.setVisible(true);
 		
 		// creating panel
-		panel = new GamePanel(opt, mapManager,this);
+		GamePanel panel = new GamePanel(opt, mapManager, this);
 		panel.setVisible(true);
 		this.add(panel);
 		

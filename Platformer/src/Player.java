@@ -5,40 +5,73 @@ import java.awt.Rectangle;
 /*
  *  TODO: 
  *  	fix down nohold jump
- *  	
  */
 
+/**
+ * Player class, all logic for movement and player drawing is held here
+ * 
+ * @author Anton
+ */
 public class Player {
-	GamePanel panel;
-	Options opt;
-
-	public int x, y;
-
+	/**
+	 * Maximum speed of player
+	 */
+	private static final double MAX_SPEEED = 8;
+	/**
+	 * This constant is created to manage sliding of player
+	 */
+	private static final double SLIDING_THRESHOLD = 0.8;
+	private GamePanel panel;
+	private Options opt;
+	private int x, y;
 	private int width, height;
-
-	double xSpeed, ySpeed;
-
+	private double xSpeed, ySpeed;
 	private Rectangle hitBox;
-
 	public boolean kLeft, kRight, kUp, kDown;
 
+	/**
+	 * Player constructor
+	 * 
+	 * @param x     - Player x position
+	 * @param y     - Player y position
+	 * @param panel - Game panel
+	 * @param opt   - Game options
+	 */
 	public Player(int x, int y, GamePanel panel, Options opt) {
 		this.panel = panel;
 		this.x = x;
 		this.y = y;
 		this.opt = opt;
-
-		width = opt.playerWidth;
-		height = opt.playerHeight;
+		width = opt.getPlayerWidth();
+		height = opt.getPlayerHeight();
 		hitBox = new Rectangle(x, y, width, height);
-
 	}
 
-	double charge = 1;
-	int chargeTimes = 1;
-	int charges = 0;
-	int heightDifference = 0;
+	/**
+	 * This variable is used to determine how high player will jump after charging.
+	 */
+	private double charge = 1;
 
+	/**
+	 * This variable is used to determine how many FPS has passed.
+	 */
+	private int chargeTimes = 1;
+	/**
+	 * This variable is used to determine how many time the player has charged. Max
+	 * 2.
+	 */
+	private int charges = 0;
+	/**
+	 * This variable is used to change height when charging and jumping.
+	 */
+	private int heightDifference = 0;
+
+	/**
+	 * This method sets the player. Checks where he moves, how high he jumps and
+	 * also creates gravity for the player. Main logic for player.
+	 * 
+	 * @throws InterruptedException
+	 */
 	public void set() throws InterruptedException {
 		// left and right movement
 		if (kLeft && kRight || !kLeft && !kRight) {
@@ -46,33 +79,29 @@ public class Player {
 		} else if (kLeft && !kRight) {
 			if (!kDown) {
 				xSpeed--;
-			} else if (!kDown && !onGround()) {
-				xSpeed--;
 			}
 		} else if (kRight && !kLeft) {
 			if (!kDown) {
 				xSpeed++;
-			} else if (!kDown && !onGround()) {
-				xSpeed--;
 			}
 		} else if (kDown && onGround()) {
 			xSpeed = 0;
 		}
 
-		if (xSpeed > 0 && xSpeed < 0.8 || xSpeed < 0 && xSpeed > -0.8)
+		if (xSpeed > 0 && xSpeed < SLIDING_THRESHOLD || xSpeed < 0 && xSpeed > -SLIDING_THRESHOLD)
 			xSpeed = 0; // prevent sliding
 
-		if (xSpeed > 8)
-			xSpeed = 8; // max speed to the right
-		if (xSpeed < -8)
-			xSpeed = -8; // max speed to the left
+		if (xSpeed > MAX_SPEEED)
+			xSpeed = MAX_SPEEED; // max speed to the right
+		if (xSpeed < -MAX_SPEEED)
+			xSpeed = -MAX_SPEEED; // max speed to the left
 
 		// small jumps up
 		if (kUp && !kDown) {
 			hitBox.y++;
-			for (Wall walls : panel.walls) {
+			for (Wall walls : panel.getWalls()) {
 				if (this.hitBox.intersects(walls.hitBox)) {
-					ySpeed = -(6 * (1 + opt.playerGravitation));
+					ySpeed = -(6 * (1 + opt.getPlayerGravitation()));
 				}
 			}
 			hitBox.y--;
@@ -90,7 +119,7 @@ public class Player {
 						y += heightDifference;
 						height -= heightDifference;
 						hitBox.height = height;
-						charge += opt.playerCharge + opt.playerGravitation + 1;
+						charge = charge + opt.getPlayerCharge() + opt.getPlayerGravitation() + 1;
 					} else if (chargeTimes == 30) { // max charge
 						charges = 2;
 						heightDifference = height / 3;
@@ -98,7 +127,7 @@ public class Player {
 						y = y + heightDifference;
 						height -= heightDifference;
 						hitBox.height = height;
-						charge += opt.playerCharge + opt.playerGravitation;
+						charge = charge + opt.getPlayerCharge() + opt.getPlayerGravitation();
 					}
 					chargeTimes++;
 				}
@@ -112,7 +141,7 @@ public class Player {
 			} else if (charges == 2) {
 				hitBox.y = y - heightDifference;
 				y = y - heightDifference;
-				heightDifference = opt.playerHeight / 4;
+				heightDifference = opt.getPlayerHeight() / 4;
 				hitBox.y = y - heightDifference;
 				y = y - heightDifference;
 			}
@@ -123,19 +152,18 @@ public class Player {
 			chargeTimes = 1;
 			charge = 1;
 			charges = 1;
-			height = opt.playerHeight;
+			height = opt.getPlayerHeight();
 			hitBox.height = height;
 		}
 
-		ySpeed += opt.playerGravitation; // gravity
+		ySpeed += opt.getPlayerGravitation(); // gravity
 
 		// Horizontal collisions
 		if (collisionX()) {
 			// TODO: add bounce
 			if (Math.signum(ySpeed) + Math.signum(xSpeed) > 4) {
 				xSpeed = -xSpeed;
-				System.out.println();
-			} else {				
+			} else {
 				xSpeed = 0;
 				x = hitBox.x;
 			}
@@ -145,7 +173,6 @@ public class Player {
 		if (collisionY()) {
 			if (10 <= Math.signum(ySpeed)) {
 				ySpeed = ySpeed * 0.3;
-				System.out.println("Collission");
 			} else {
 				ySpeed = 0;
 				hitBox.y = y;
@@ -153,20 +180,26 @@ public class Player {
 		}
 
 		x += xSpeed;
-		panel.cameraY += ySpeed;
+		panel.setCameraY((int) (panel.getCameraY() + ySpeed));
 
 		hitBox.x = x;
 		hitBox.y = y;
 
 		// checking for death
-		if (panel.cameraY > 900) {
+		if (panel.getCameraY() > 900) {
 			panel.reset();
 		}
 	}
 
+	/**
+	 * This method determines whether player is colliding with the wall on x axis
+	 * (sides).
+	 * 
+	 * @return - returns true if collides, false if not.
+	 */
 	public boolean collisionX() {
 		hitBox.x += xSpeed;
-		for (Wall wall : panel.walls) {
+		for (Wall wall : panel.getWalls()) {
 			if (this.hitBox.intersects(wall.hitBox)) {
 				hitBox.x -= xSpeed;
 				while (!wall.hitBox.intersects(this.hitBox)) {
@@ -178,15 +211,20 @@ public class Player {
 		}
 		return false;
 	}
-	// FIXME: jump stops when you have too high speed
+
+	/**
+	 * This method determines whether player is colliding with the wall on y axis
+	 * (floor or ceeling).
+	 * 
+	 * @return - returns true if collides, false if not.
+	 */
 	public boolean collisionY() {
 		hitBox.y += ySpeed;
-		for (Wall wall : panel.walls) {
+		for (Wall wall : panel.getWalls()) {
 			if (this.hitBox.intersects(wall.hitBox)) {
-//				System.out.println("Collission Y");
 				hitBox.y -= ySpeed;
 				while (!wall.hitBox.intersects(this.hitBox)) {
-					hitBox.y += Math.signum(ySpeed); // ability to get right to the
+					hitBox.y += Math.signum(ySpeed);
 				}
 				hitBox.y -= Math.signum(ySpeed); // backstep from a wall 1 px
 				return true;
@@ -195,9 +233,15 @@ public class Player {
 		return false;
 	}
 
+	/**
+	 * Less complicated than collisionY. But cant be used to make collision logic.
+	 * Mainly used to determine whether player is standing on floor.
+	 * 
+	 * @return
+	 */
 	public boolean onGround() {
 		hitBox.y++;
-		for (Wall wall : panel.walls) {
+		for (Wall wall : panel.getWalls()) {
 			if (this.hitBox.intersects(wall.hitBox)) {
 				hitBox.y--;
 				return true;
@@ -207,17 +251,65 @@ public class Player {
 		return false;
 	}
 
+	/**
+	 * This method draws out the player and players y position
+	 * 
+	 * @param gtd - Graphics 2D
+	 */
 	public void draw(Graphics2D gtd) {
-		gtd.setColor(opt.playerColor);
+		gtd.setColor(opt.getPlayerColor());
 		gtd.fillRect(x, y, width, height);
-//		gtd.setColor(opt.hitbox);
-//		gtd.fillRect(hitBox.x - 105, hitBox.y, hitBox.width + 10, hitBox.height); // hitbox checker (abit to side to see
-																					// how it transforms, etc ... )
 		Font f = new Font("Arial", Font.BOLD, 40);
 		gtd.setFont(f);
-		gtd.drawString(Integer.toString(x), 100, 100);
-		gtd.drawString(Integer.toString(y), 200, 100);
-		gtd.drawString(Double.toString(ySpeed), 300, 100);
-		gtd.drawString(Integer.toString(panel.cameraY), 400, 100);
+		gtd.drawString("Height: " + Integer.toString((100 - panel.getCameraY()) / 10), 300, 100);
+	}
+
+	// not checking getters and setter, maybe in future patches
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public double getxSpeed() {
+		return xSpeed;
+	}
+
+	public void setxSpeed(double xSpeed) {
+		this.xSpeed = xSpeed;
+	}
+
+	public double getySpeed() {
+		return ySpeed;
+	}
+
+	public void setySpeed(double ySpeed) {
+		this.ySpeed = ySpeed;
 	}
 }
