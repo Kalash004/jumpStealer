@@ -43,7 +43,6 @@ public class GamePanel extends JPanel implements ActionListener {
 					player.set();
 					for (Wall wall : walls) {
 						wall.set(cameraX, cameraY);
-						System.out.println(wall.startY);
 					}
 					repaint();
 				} catch (Exception e) {
@@ -116,7 +115,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
 		player.x = wind.getWidth() / 2;
 		cameraY = 50;
-		player.y = cameraY * 8; // FIXME: Needs clean new way
+		player.y = cameraY * 8;
 		player.xSpeed = 0;
 		player.ySpeed = 0;
 		walls.clear();

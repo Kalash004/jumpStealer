@@ -132,13 +132,17 @@ public class Player {
 		// Horizontal collisions
 		if (collisionX()) {
 			// TODO: add bounce
-			xSpeed = 0;
-			x = hitBox.x;
+			if (Math.signum(ySpeed) + Math.signum(xSpeed) > 4) {
+				xSpeed = -xSpeed;
+				System.out.println();
+			} else {				
+				xSpeed = 0;
+				x = hitBox.x;
+			}
 		}
 
 		// Vertical collisions
 		if (collisionY()) {
-			// panel.cameraY += y - hitBox.y;
 			if (10 <= Math.signum(ySpeed)) {
 				ySpeed = ySpeed * 0.3;
 				System.out.println("Collission");

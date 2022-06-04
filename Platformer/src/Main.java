@@ -10,7 +10,6 @@ public class Main {
 		try {
 			mapManager.exportMap(mapManager.currentMap, "testmap2");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
